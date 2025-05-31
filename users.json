@@ -2,6 +2,39 @@
   "t.s.vinoth27@gmail.com": {
     "username": "Vinoth Kumar T S",
     "password": "vinoth",
-    "chats": {}
+    "chats": {
+      "null": {
+        "history": [
+          {
+            "question": "Tell about Vinoth",
+            "answer": "Vinoth Kumar T S is a 19-year-old (born August 27, 2005) pre-final year Bachelor of Technology student in Information Technology at Thiagarajar College of Engineering in Madurai, Tamil Nadu, India.  He describes himself as an enthusiastic programmer and web developer passionate about problem-solving, coding, and creating innovative solutions. His expertise lies in UI/UX design, front-end and back-end web development, and building seamless user experiences.  He's interested in app development and is open to new opportunities and collaborations.\n\nHis skills include (with percentages indicating proficiency): HTML & CSS (97%), Artificial Intelligence (AI) (90%), ReactJS (82%), Problem Solving (80%), Figma (95%), Machine Learning (ML) (90%), Python Programming (97%), Deep Learning (89%), Git & GitHub (75%), and SQL (92%).  He also lists interest in Flutter, DBMS, OOPS, PHP, Java, Android Studio, Postman, and MySQL.\n\nHis portfolio showcases projects including prototypes for drowsiness and yawn detection, facial emotion detection, and web apps such as an AI-based recommendation system, an AI-powered course recommendation and learning system, an automated road assessment system, and a SHA-256 hash generator. He also has mobile apps for weather, goal tracking, and news.  His resume details his education, including his secondary and higher secondary education (achieving 96% and 94% respectively), and his current B.Tech program.  He can be contacted via email at t.s.vinoth27@gmail.com or phone at +91-8637648274.  His website is www.vinothkumarts.com.\n"
+          }
+        ],
+        "title": "VINOTH KUMAR T S",
+        "url": "https://vinothkumarts.com/",
+        "uploaded_docs": [],
+        "vectorized": true
+      },
+      "2bc124aa-a5e5-4289-8416-b24e1b1c998d": {
+        "history": [],
+        "title": "Untitled Chat",
+        "url": null,
+        "uploaded_docs": [],
+        "vectorized": false
+      }
+    }
+  },
+  "vino@gmail.com": {
+    "username": "Vinoth",
+    "password": "vinoth",
+    "chats": {
+      "null": {
+        "history": [],
+        "title": "VINOTH KUMAR T S",
+        "url": "https://vinothkumarts.com/",
+        "uploaded_docs": [],
+        "vectorized": true
+      }
+    }
   }
 }

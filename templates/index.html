@@ -214,14 +214,14 @@
         </form>
       </div>
 
-      <button class="new-chat-btn" onclick="location.href='/?new=true'">
+      <button class="new-chat-btn" onclick="location.href='/chat?new=true'">
         <i class="fas fa-plus"></i> New Chat
       </button>
 
       <ul class="chat-list">
         {% for session_id, title in chat_titles.items() %}
         <li class="chat-item">
-          <span onclick="location.href='/?chat_id={{ session_id }}'">{{ title }}</span>
+        <span onclick="location.href='/chat?chat_id={{ session_id }}'">{{ title }}</span>
           <span class="chat-controls">
             <button data-bs-toggle="modal" data-bs-target="#chatModal{{ session_id }}">
               <i class="fas fa-ellipsis-v"></i>

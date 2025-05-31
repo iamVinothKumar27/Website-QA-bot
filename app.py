@@ -133,16 +133,28 @@ def chat():
     if "chats" not in session:
         session["chats"] = {}
 
-    # ✅ Get chat_id from URL or session
-    chat_id = request.args.get("chat_id") or session.get("current_chat")
+    # ✅ Create new chat if requested
+    if request.args.get("new") == "true":
+        chat_id = str(uuid4())
+        session["current_chat"] = chat_id
+        session["chats"][chat_id] = {
+            "history": [],
+            "title": "Untitled Chat",
+            "url": None,
+            "uploaded_docs": [],
+            "vectorized": False,
+        }
+        session.modified = True
+        return redirect(url_for("chat", chat_id=chat_id))  # Important to redirect after creation
 
-    # ✅ Fallback to any existing chat if not set
+    # ✅ Switch to existing chat
+    chat_id = request.args.get("chat_id") or session.get("current_chat")
     if not chat_id and session["chats"]:
         chat_id = next(iter(session["chats"]))
-        session["current_chat"] = chat_id
+    session["current_chat"] = chat_id
 
-    chat = session["chats"].get(chat_id, {}) if chat_id else {}
-
+    # ✅ Get current chat object
+    chat = session["chats"].get(chat_id, {})
     chat.setdefault("history", [])
     chat.setdefault("title", "Untitled Chat")
     chat.setdefault("url", None)
@@ -184,17 +196,16 @@ def chat():
                 chunks = get_text_chunks(combined_text)
                 get_vector_store(chunks)
                 chat["vectorized"] = True
-                chat_id = str(uuid4())
-                session["current_chat"] = chat_id
                 session["chats"][chat_id] = chat
                 status = "complete"
             else:
                 answer = "Failed to extract content from the provided inputs."
                 status = "error"
+
         elif question:
             answer = get_answer(question)
             chat["history"].append({"question": question, "answer": answer})
-            session["chats"][session["current_chat"]] = chat  # ✅ Ensure update stored
+            session["chats"][chat_id] = chat
             status = "complete"
 
         session.modified = True
@@ -206,18 +217,10 @@ def chat():
         chat_history=chat["history"],
         chat_url=chat["url"],
         uploaded_docs=chat["uploaded_docs"],
-        chat_titles={cid: c["title"] for cid, c in session["chats"].items()}
+        chat_titles={cid: c["title"] for cid, c in session["chats"].items()},
+        current_chat_id=chat_id
     )
 
-    return render_template(
-        "index.html",
-        question=question,
-        status=status,
-        chat_history=chat["history"],
-        chat_url=chat["url"],
-        uploaded_docs=chat["uploaded_docs"],
-        chat_titles={cid: c["title"] for cid, c in session["chats"].items()}
-    )
 
 @app.route("/rename", methods=["POST"])
 def rename_chat():
@@ -309,7 +312,6 @@ def get_answer(query):
     chain = get_conversational_chain()
     result = chain.invoke({"input_documents": docs, "question": query})
     return result["output_text"]
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
