@@ -13,3 +13,4 @@ langchain-google-genai==0.0.7
 google-generativeai==0.3.2
 faiss-cpu==1.7.4
 gunicorn
+authlib==1.2.1
