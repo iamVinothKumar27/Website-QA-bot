@@ -1,12 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>🌐 DocuWeb AI</title>
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <head>
+        <meta charset="UTF-8">
+        <title>🌐 DocuWeb AI - Chat with Websites and Documents</title>
+        <meta name="description" content="DocuWeb AI lets you chat with any website or document (PDF, DOCX, XLSX). Upload or enter a URL and ask questions instantly.">
+        <meta name="keywords" content="DocuWeb AI, Document Chatbot, Website Chat AI, PDF Chat, DOCX AI, XLSX Assistant, Chat with Website, AI Document Reader, ChatGPT for Documents, DocuBot AI">
+        <meta name="author" content="Vinoth Kumar T S">
+      
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+      
+        <!-- Open Graph for better social sharing -->
+        <meta property="og:title" content="DocuWeb AI - Chat with Websites and Documents">
+        <meta property="og:description" content="Chat with your documents or any website using AI. Upload files or enter URLs to start.">
+        <meta property="og:image" content="https://yourdomain.com/static/og-image.png"> <!-- Replace with real URL -->
+        <meta property="og:url" content="https://docubot.vinothkumarts.com">
+        <meta property="og:type" content="website">
+      
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="DocuWeb AI">
+        <meta name="twitter:description" content="Chat with PDFs, DOCX, XLSX or any website using AI.">
+        <meta name="twitter:image" content="https://yourdomain.com/static/og-image.png"> <!-- Replace with real URL -->
+      
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <!-- (rest of your existing styles) -->
+      
   <style>
     body {
       font-family: Arial, sans-serif;
