@@ -26,6 +26,7 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 app = Flask(__name__)
 app.secret_key = "secret"
 app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_COOKIE_SECURE"] = True  # Secure cookie for HTTPS
 Session(app)
 
 UPLOAD_FOLDER = "uploads"
@@ -34,18 +35,14 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 USERS_FILE = "users.json"
 ADMIN_CREDENTIALS = {"email": "admin@site.com", "password": "admin123"}
 
-# Auth0 setup
+# ✅ Auth0 setup using metadata URL
 oauth = OAuth(app)
 auth0 = oauth.register(
     'auth0',
     client_id=os.getenv("AUTH0_CLIENT_ID"),
     client_secret=os.getenv("AUTH0_CLIENT_SECRET"),
-    api_base_url=f'https://{os.getenv("AUTH0_DOMAIN")}',
-    access_token_url=f'https://{os.getenv("AUTH0_DOMAIN")}/oauth/token',
-    authorize_url=f'https://{os.getenv("AUTH0_DOMAIN")}/authorize',
-    client_kwargs={
-        'scope': 'openid profile email',
-    },
+    client_kwargs={'scope': 'openid profile email'},
+    server_metadata_url=f'https://{os.getenv("AUTH0_DOMAIN")}/.well-known/openid-configuration'
 )
 
 def load_users():
@@ -120,8 +117,8 @@ def auth0_login():
 
 @app.route("/callback")
 def callback():
-    token = oauth.auth0.authorize_access_token()
-    userinfo = oauth.auth0.get("userinfo").json()  # ✅ Correct way
+    token = auth0.authorize_access_token()
+    userinfo = auth0.get('userinfo').json()
     session["profile"] = {
         "user_id": userinfo["sub"],
         "name": userinfo["name"],
@@ -130,7 +127,6 @@ def callback():
     session["user"] = userinfo["email"]
     session["chats"] = load_users().get(userinfo["email"], {}).get("chats", {})
     return redirect(url_for("chat"))
-
 
 @app.route("/auth0-logout")
 def auth0_logout():
