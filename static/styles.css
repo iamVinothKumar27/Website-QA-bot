@@ -1,0 +1,16 @@
+#status {
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+.loading {
+    background-color: #dce2f0;
+    color: #000;
+}
+.complete {
+    background-color: #d3f9d8;
+    color: #000;
+}
+.qa-block {
+    margin-bottom: 15px;
+}

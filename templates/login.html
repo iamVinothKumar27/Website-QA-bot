@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DocuWeb AI - Login</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <style>
+    body, html {
+      height: 100%;
+    }
+    .center-box {
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .form-box {
+      background-color: #1c1c1c;
+      padding: 30px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
+    }
+  </style>
+</head>
+<body class="bg-dark text-white">
+  <div class="container center-box">
+    <div class="form-box">
+      <div class="text-center mb-4">
+        <img src="{{ url_for('static', filename='logo.png') }}" width="80" alt="DocuBot AI Logo">
+      </div>
+      <h2 class="text-center mb-4">DocuWeb AI - Login</h2>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      <form method="POST">
+        <div class="mb-3">
+          <label>Email</label>
+          <input type="email" name="email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label>Password</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-success w-100">Login</button>
+      </form>
+      <p class="mt-3 text-center">
+        Don’t have an account? <a href="{{ url_for('signup') }}">Sign up</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

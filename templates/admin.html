@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DocuWeb AI - Admin Panel</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+</head>
+<body class="bg-dark text-white">
+  <div class="container mt-5">
+    <div class="text-center mb-4">
+      <img src="{{ url_for('static', filename='logo.png') }}" width="80" alt="DocuBot AI Logo">
+    </div>
+    <h2 class="text-center mb-4">DocuWeb AI - Admin Panel - User Management</h2>
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Username</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for email, data in users.items() %}
+        <tr>
+          <td>{{ email }}</td>
+          <td>{{ data.username }}</td>
+          <td>
+            <a href="{{ url_for('delete_user', email=email) }}" class="btn btn-danger btn-sm">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <a href="{{ url_for('logout') }}" class="btn btn-light mt-3">Logout</a>
+  </div>
+</body>
+</html>
