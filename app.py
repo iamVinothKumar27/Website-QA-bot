@@ -119,7 +119,7 @@ def auth0_login():
 @app.route("/callback")
 def callback():
     token = auth0.authorize_access_token()
-    userinfo = auth0.get('userinfo').json()
+    userinfo = auth0.get('userinfo', token=token).json()
     session["profile"] = {
         "user_id": userinfo["sub"],
         "name": userinfo["name"],
@@ -128,6 +128,7 @@ def callback():
     session["user"] = userinfo["email"]
     session["chats"] = load_users().get(userinfo["email"], {}).get("chats", {})
     return redirect(url_for("chat"))
+
 
 @app.route("/auth0-logout")
 def auth0_logout():
