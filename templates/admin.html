@@ -33,7 +33,10 @@
         {% endfor %}
       </tbody>
     </table>
-    <a href="{{ url_for('logout') }}" class="btn btn-light mt-3">Logout</a>
+    <form action="{{ url_for('auth0_logout') }}" method="get">
+        <button class="logout-btn">Logout</button>
+      </form>
+      
   </div>
 </body>
 </html>

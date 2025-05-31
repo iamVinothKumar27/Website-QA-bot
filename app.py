@@ -1,15 +1,17 @@
 import os
 import json
 import requests
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask_session import Session
+from werkzeug.utils import secure_filename
+from uuid import uuid4
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, session, redirect, url_for, flash
-from flask_session import Session
-from uuid import uuid4
-from werkzeug.utils import secure_filename
+from authlib.integrations.flask_client import OAuth
 from PyPDF2 import PdfReader
 import docx
 import openpyxl
+
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import google.generativeai as genai
@@ -25,12 +27,26 @@ app = Flask(__name__)
 app.secret_key = "secret"
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 USERS_FILE = "users.json"
 ADMIN_CREDENTIALS = {"email": "admin@site.com", "password": "admin123"}
 
+# Auth0 setup
+oauth = OAuth(app)
+auth0 = oauth.register(
+    'auth0',
+    client_id=os.getenv("AUTH0_CLIENT_ID"),
+    client_secret=os.getenv("AUTH0_CLIENT_SECRET"),
+    api_base_url=f'https://{os.getenv("AUTH0_DOMAIN")}',
+    access_token_url=f'https://{os.getenv("AUTH0_DOMAIN")}/oauth/token',
+    authorize_url=f'https://{os.getenv("AUTH0_DOMAIN")}/authorize',
+    client_kwargs={
+        'scope': 'openid profile email',
+    },
+)
 
 def load_users():
     if os.path.exists(USERS_FILE):
@@ -44,7 +60,7 @@ def save_users(users):
 
 @app.before_request
 def require_login():
-    allowed_routes = ['login', 'signup', 'static']
+    allowed_routes = ['login', 'signup', 'auth0_login', 'callback', 'static']
     if request.endpoint not in allowed_routes and 'user' not in session and 'admin' not in session:
         return redirect(url_for('login'))
 
@@ -54,6 +70,10 @@ def inject_user_initials():
         users = load_users()
         user = users.get(session['user'], {})
         name = user.get("username", "")
+        initials = ''.join(part[0].upper() for part in name.split() if part)
+        return dict(user_initials=initials, user_name=name)
+    elif 'profile' in session:
+        name = session['profile'].get('name', '')
         initials = ''.join(part[0].upper() for part in name.split() if part)
         return dict(user_initials=initials, user_name=name)
     return dict(user_initials="", user_name="")
@@ -90,16 +110,36 @@ def login():
             session.clear()
             session["user"] = email
             session["chats"] = user.get("chats", {})
-            return redirect(url_for("index"))
+            return redirect(url_for("chat"))
         flash("Invalid credentials", "danger")
     return render_template("login.html")
 
+@app.route("/auth0-login")
+def auth0_login():
+    return auth0.authorize_redirect(redirect_uri=os.getenv("AUTH0_CALLBACK_URL"))
+
+@app.route("/callback")
+def callback():
+    token = auth0.authorize_access_token()
+    userinfo = auth0.get('userinfo').json()
+    session["profile"] = {
+        "user_id": userinfo["sub"],
+        "name": userinfo["name"],
+        "email": userinfo["email"]
+    }
+    session["user"] = userinfo["email"]
+    session["chats"] = load_users().get(userinfo["email"], {}).get("chats", {})
+    return redirect(url_for("chat"))
+
+@app.route("/auth0-logout")
+def auth0_logout():
+    session.clear()
+    return redirect(
+        f"https://{os.getenv('AUTH0_DOMAIN')}/v2/logout?returnTo={url_for('login', _external=True)}&client_id={os.getenv('AUTH0_CLIENT_ID')}"
+    )
+
 @app.route("/logout")
 def logout():
-    if "user" in session:
-        users = load_users()
-        users[session["user"]]["chats"] = session.get("chats", {})
-        save_users(users)
     session.clear()
     return redirect(url_for("login"))
 
@@ -293,5 +333,4 @@ def get_answer(query):
     return result["output_text"]
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True)

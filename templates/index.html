@@ -209,9 +209,10 @@
       <div class="profile">
         <div class="avatar">{{ user_initials }}</div>
         <div class="username">{{ user_name }}</div>
-        <form action="/logout" method="get">
-          <button class="logout-btn">Logout</button>
-        </form>
+        <form action="{{ url_for('auth0_logout') }}" method="get">
+            <button class="logout-btn">Logout</button>
+          </form>
+          
       </div>
 
       <button class="new-chat-btn" onclick="location.href='/?new=true'">
