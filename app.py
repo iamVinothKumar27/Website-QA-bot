@@ -90,7 +90,10 @@ def login():
             session.clear()
             session["user"] = email
             session["chats"] = user.get("chats", {})
-            return redirect(url_for("index"))
+            # ✅ Restore current chat (latest or first)
+            if session["chats"]:
+                session["current_chat"] = list(session["chats"].keys())[-1]
+            return redirect(url_for("chat"))
         flash("Invalid credentials", "danger")
     return render_template("login.html")
 
@@ -102,6 +105,7 @@ def logout():
         save_users(users)
     session.clear()
     return redirect(url_for("login"))
+
 
 @app.route("/admin")
 def admin_panel():
@@ -129,12 +133,15 @@ def chat():
     if "chats" not in session:
         session["chats"] = {}
 
+    # ✅ Get chat_id from URL or session
     chat_id = request.args.get("chat_id") or session.get("current_chat")
 
-    if chat_id:
-        chat = session["chats"].get(chat_id, {})
-    else:
-        chat = {}
+    # ✅ Fallback to any existing chat if not set
+    if not chat_id and session["chats"]:
+        chat_id = next(iter(session["chats"]))
+        session["current_chat"] = chat_id
+
+    chat = session["chats"].get(chat_id, {}) if chat_id else {}
 
     chat.setdefault("history", [])
     chat.setdefault("title", "Untitled Chat")
@@ -187,9 +194,20 @@ def chat():
         elif question:
             answer = get_answer(question)
             chat["history"].append({"question": question, "answer": answer})
+            session["chats"][session["current_chat"]] = chat  # ✅ Ensure update stored
             status = "complete"
 
         session.modified = True
+
+    return render_template(
+        "index.html",
+        question=question,
+        status=status,
+        chat_history=chat["history"],
+        chat_url=chat["url"],
+        uploaded_docs=chat["uploaded_docs"],
+        chat_titles={cid: c["title"] for cid, c in session["chats"].items()}
+    )
 
     return render_template(
         "index.html",
